@@ -1,0 +1,34 @@
+---
+const navItems = [
+  { href: "#about", label: "O mnie" },
+  { href: "#projects", label: "Projekty" },
+  { href: "#skills", label: "Umiejętności" },
+  { href: "#contact", label: "Kontakt" },
+];
+---
+
+<header class="border-b border-line">
+  <nav
+    class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-5"
+    aria-label="Nawigacja główna"
+  >
+    <a href="#top" class="font-mono text-lg font-bold text-fg no-underline">
+      Miłosz Baron<span class="text-accent">_</span>
+    </a>
+
+    <ul class="flex flex-wrap gap-1 text-sm">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="inline-flex min-h-11 items-center px-3 text-muted no-underline hover:text-fg"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
