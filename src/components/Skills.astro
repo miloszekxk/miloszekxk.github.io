@@ -1,0 +1,24 @@
+---
+import { skillGroups } from "../data/projects";
+---
+
+<section
+  id="skills"
+  class="mx-auto flex max-w-5xl flex-col gap-10 border-t border-line px-6 py-20"
+>
+  <h2 class="font-mono text-3xl font-bold tracking-tight text-fg">
+    Co umiem
+  </h2>
+
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+    {
+      skillGroups.map((skill) => (
+        <div class="flex flex-col gap-2 rounded-xl border border-border bg-surface p-6">
+          <h3 class="text-lg font-semibold text-fg">{skill.group}</h3>
+          <p class="text-base text-fg-soft">{skill.plain}</p>
+          <p class="text-sm text-muted">{skill.items}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
