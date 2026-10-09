@@ -1,19 +1,19 @@
 ---
 const navItems = [
-  { href: "#about", label: "O mnie" },
-  { href: "#projects", label: "Projekty" },
-  { href: "#skills", label: "Umiejętności" },
-  { href: "#contact", label: "Kontakt" },
+  { href: "#about", id: "about", label: "O mnie" },
+  { href: "#projects", id: "projects", label: "Projekty" },
+  { href: "#skills", id: "skills", label: "Umiejętności" },
+  { href: "#contact", id: "contact", label: "Kontakt" },
 ];
 ---
 
-<header class="border-b border-line">
+<header class="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur-sm">
   <nav
     class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-5"
     aria-label="Nawigacja główna"
   >
     <a href="#top" class="font-mono text-lg font-bold text-fg no-underline">
-      Miłosz Baron<span class="text-accent">_</span>
+      Miłosz Baron<span class="cursor-blink text-accent">_</span>
     </a>
 
     <ul class="flex flex-wrap gap-1 text-sm">
@@ -22,7 +22,8 @@ const navItems = [
           <li>
             <a
               href={item.href}
-              class="inline-flex min-h-11 items-center px-3 text-muted no-underline hover:text-fg"
+              data-nav-link={item.id}
+              class="inline-flex min-h-11 items-center px-3 text-muted no-underline transition-colors hover:text-fg"
             >
               {item.label}
             </a>
@@ -31,4 +32,53 @@ const navItems = [
       }
     </ul>
   </nav>
+  <div id="scroll-progress" class="absolute bottom-[-1px] left-0 h-0.5 w-full origin-left bg-accent" style="transform: scaleX(0)" aria-hidden="true"></div>
 </header>
+
+<script>
+  const links = document.querySelectorAll<HTMLAnchorElement>("[data-nav-link]");
+
+  const sections = Array.from(links)
+    .map((link) => document.getElementById(link.dataset.navLink ?? ""))
+    .filter((section): section is HTMLElement => section !== null);
+
+  function setActive(id: string) {
+    links.forEach((link) => {
+      const isActive = link.dataset.navLink === id;
+      link.classList.toggle("text-fg", isActive);
+      link.classList.toggle("text-muted", !isActive);
+    });
+  }
+
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      const visible = entries.find((entry) => entry.isIntersecting);
+      if (visible) setActive(visible.target.id);
+    },
+    { rootMargin: "-45% 0px -50% 0px" }
+  );
+
+  sections.forEach((section) => sectionObserver.observe(section));
+
+  const progress = document.getElementById("scroll-progress");
+  let ticking = false;
+
+  function updateProgress() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const ratio = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+    if (progress) progress.style.transform = `scaleX(${ratio})`;
+    ticking = false;
+  }
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateProgress);
+      }
+    },
+    { passive: true }
+  );
+  updateProgress();
+</script>
