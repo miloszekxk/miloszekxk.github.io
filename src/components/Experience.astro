@@ -18,15 +18,19 @@ const timeline = [
 ];
 ---
 
-<section class="mx-auto flex max-w-5xl flex-wrap gap-8 border-t border-line px-6 py-20">
+<section
+  id="experience"
+  data-reveal
+  class="mx-auto flex max-w-5xl flex-wrap gap-8 border-t border-line px-6 py-20"
+>
   <h2 class="min-w-60 flex-1 font-mono text-3xl font-bold tracking-tight text-fg">
     Doświadczenie
   </h2>
 
-  <ol class="flex-[999] min-w-80 space-y-7">
+  <ol class="flex-999 min-w-80 space-y-7">
     {
-      timeline.map((item) => (
-        <li class="flex flex-wrap gap-2 sm:gap-6">
+      timeline.map((item, i) => (
+        <li style={`--i: ${i}`} class="reveal-item flex flex-wrap gap-2 sm:gap-6">
           <span class="w-full shrink-0 font-mono text-sm text-muted sm:w-36">
             {item.period}
           </span>

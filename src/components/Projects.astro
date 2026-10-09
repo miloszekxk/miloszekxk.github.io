@@ -4,6 +4,7 @@ import { projects } from "../data/projects";
 
 <section
   id="projects"
+  data-reveal
   class="mx-auto flex max-w-5xl flex-col gap-10 border-t border-line px-6 py-20"
 >
   <h2 class="font-mono text-3xl font-bold tracking-tight text-fg">
@@ -12,8 +13,8 @@ import { projects } from "../data/projects";
 
   <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
     {
-      projects.map((project) => (
-        <article class="flex flex-col gap-4 rounded-xl border border-border bg-surface p-7">
+      projects.map((project, i) => (
+        <article style={`--i: ${i}`} class="card reveal-item flex flex-col gap-4 rounded-xl border border-border bg-surface p-7">
           <span class="text-sm font-medium text-accent">{project.tag}</span>
 
           <h3 class="font-mono text-xl font-bold text-fg">{project.name}</h3>
@@ -26,7 +27,7 @@ import { projects } from "../data/projects";
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex min-h-11 w-fit items-center rounded-md border border-border px-4 text-sm text-fg no-underline"
+            class="inline-flex min-h-11 w-fit items-center rounded-md border border-border px-4 text-sm text-fg no-underline transition duration-200 hover:-translate-y-0.5 hover:border-fg"
           >
             Zobacz projekt →
           </a>

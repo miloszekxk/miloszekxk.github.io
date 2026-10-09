@@ -23,5 +23,149 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+[data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+
+.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Hero: kolejne elementy wchodzą jeden po drugim */
+.hero-in {
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 140ms + 100ms);
+}
+
+.hero-glow {
+  position: absolute;
+  inset: -4rem -2rem auto auto;
+  z-index: -1;
+  width: 32rem;
+  max-width: 100%;
+  height: 24rem;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent) 16%, transparent),
+    transparent
+  );
+  filter: blur(20px);
+}
+
+/* Karty i elementy listy: kaskadowe pojawianie się po odsłonięciu sekcji */
+.js [data-reveal] .reveal-item {
+  opacity: 0;
+}
+
+.js [data-reveal].is-visible .reveal-item {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 100ms + 150ms);
+}
+
+/* Unoszenie kart (własność translate nie koliduje z animacją transform) */
+.card {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.3s ease,
+    translate 0.3s ease;
+}
+
+.card:hover {
+  translate: 0 -4px;
+  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  box-shadow: 0 14px 34px -14px color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* Nawigacja: animowane podkreślenie */
+[data-nav-link] {
+  position: relative;
+}
+
+[data-nav-link]::after {
+  content: "";
+  position: absolute;
+  inset: auto 0.75rem 0.5rem;
+  height: 2px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+[data-nav-link]:hover::after,
+[data-nav-link].text-fg::after {
+  transform: scaleX(1);
+}
+
+.cursor-blink {
+  animation: blink 1.1s steps(1) infinite;
+}
+
+#scroll-progress {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .js [data-reveal] .reveal-item {
+    opacity: 1;
+  }
+
+  .js [data-reveal].is-visible .reveal-item,
+  .hero-in,
+  .cursor-blink {
+    animation: none;
+  }
+
+  .card,
+  [data-nav-link]::after {
+    transition: none;
+  }
+
+  .card:hover {
+    translate: none;
+  }
 }
