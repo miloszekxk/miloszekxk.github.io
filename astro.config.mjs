@@ -9,9 +9,27 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://miloszekxk.github.io',
 
+  i18n: {
+    locales: ['pl', 'en'],
+    defaultLocale: 'pl',
+    routing: {
+      prefixDefaultLocale: false
+    }
+  },
+
   vite: {
     plugins: [tailwindcss()]
   },
 
-  integrations: [sitemap()]
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: 'pl',
+        locales: {
+          pl: 'pl-PL',
+          en: 'en-US'
+        }
+      }
+    })
+  ]
 });

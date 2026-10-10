@@ -1,5 +1,10 @@
 ---
-import { skillGroups } from "../data/projects";
+import { getSkillGroups } from "../data/projects";
+import { getLang, useTranslations } from "../i18n/utils";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const skillGroups = getSkillGroups(lang);
 ---
 
 <section
@@ -8,7 +13,7 @@ import { skillGroups } from "../data/projects";
   class="mx-auto flex max-w-5xl flex-col gap-10 border-t border-line px-6 py-20"
 >
   <h2 class="font-mono text-3xl font-bold tracking-tight text-fg">
-    Co umiem
+    {t("skills.title")}
   </h2>
 
   <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">

@@ -1,5 +1,10 @@
 ---
-import { projects } from "../data/projects";
+import { getProjects } from "../data/projects";
+import { getLang, useTranslations } from "../i18n/utils";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const projects = getProjects(lang);
 ---
 
 <section
@@ -8,7 +13,7 @@ import { projects } from "../data/projects";
   class="mx-auto flex max-w-5xl flex-col gap-10 border-t border-line px-6 py-20"
 >
   <h2 class="font-mono text-3xl font-bold tracking-tight text-fg">
-    Wybrane projekty
+    {t("projects.title")}
   </h2>
 
   <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -21,7 +26,7 @@ import { projects } from "../data/projects";
 
           <p class="flex-1 text-base text-fg-soft">{project.description}</p>
 
-          <p class="text-sm text-muted">Zbudowane w: {project.stack}</p>
+          <p class="text-sm text-muted">{t("projects.builtWith")} {project.stack}</p>
 
           <a
             href={project.url}
@@ -29,7 +34,7 @@ import { projects } from "../data/projects";
             rel="noopener noreferrer"
             class="inline-flex min-h-11 w-fit items-center rounded-md border border-border px-4 text-sm text-fg no-underline transition duration-200 hover:-translate-y-0.5 hover:border-fg"
           >
-            Zobacz projekt →
+            {t("projects.view")}
           </a>
         </article>
       ))

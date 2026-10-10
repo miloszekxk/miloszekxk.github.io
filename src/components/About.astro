@@ -1,22 +1,20 @@
+---
+import { getLang, useTranslations } from "../i18n/utils";
+
+const t = useTranslations(getLang(Astro.currentLocale));
+---
+
 <section
   id="about"
   data-reveal
   class="mx-auto flex max-w-5xl flex-wrap gap-8 border-t border-line px-6 py-20"
 >
   <h2 class="min-w-60 flex-1 font-mono text-3xl font-bold tracking-tight text-fg">
-    O mnie
+    {t("about.title")}
   </h2>
 
   <div class="flex-999 min-w-80 space-y-4 text-lg text-fg-soft">
-    <p>
-      Lubię wiedzieć, jak rzeczy działają od środka. Konfiguruję konta i
-      uprawnienia pracowników, zarządzam serwerami z systemami Windows i
-      Linux, a gdy coś przestaje działać — szukam przyczyny i ją naprawiam.
-    </p>
-    <p>
-      Programuję też własne projekty: od urządzeń do inteligentnego domu po
-      proste aplikacje. Coraz bardziej interesuje mnie bezpieczeństwo w
-      sieci.
-    </p>
+    <p>{t("about.p1")}</p>
+    <p>{t("about.p2")}</p>
   </div>
 </section>

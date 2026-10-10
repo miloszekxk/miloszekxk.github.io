@@ -1,22 +1,37 @@
 ---
+import { languages, type Lang } from "../i18n/ui";
+import { getLang, localizedPath, useTranslations } from "../i18n/utils";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+
 const navItems = [
-  { href: "#about", id: "about", label: "O mnie" },
-  { href: "#projects", id: "projects", label: "Projekty" },
-  { href: "#skills", id: "skills", label: "Umiejętności" },
-  { href: "#contact", id: "contact", label: "Kontakt" },
+  { href: "#about", id: "about", label: t("nav.about") },
+  { href: "#projects", id: "projects", label: t("nav.projects") },
+  { href: "#skills", id: "skills", label: t("nav.skills") },
+  { href: "#contact", id: "contact", label: t("nav.contact") },
 ];
+
+const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
+  code,
+  href: localizedPath(code),
+  name: languages[code],
+  label: useTranslations(code)("a11y.switchLang"),
+  current: code === lang,
+}));
 ---
 
 <header class="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur-sm">
   <nav
-    class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-5"
-    aria-label="Nawigacja główna"
+    class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-1 px-6 py-3 md:py-4"
+    aria-label={t("a11y.mainNav")}
   >
-    <a href="#top" class="font-mono text-lg font-bold text-fg no-underline">
+    <a href="#top" data-home-link class="mr-auto font-mono text-lg font-bold text-fg no-underline">
       Miłosz Baron<span class="cursor-blink text-accent">_</span>
     </a>
 
-    <ul class="flex flex-wrap gap-1 text-sm">
+    <!-- Na telefonie: logo i język w pierwszym rzędzie, linki w drugim -->
+    <ul class="order-last -mx-3 flex w-[calc(100%+1.5rem)] flex-wrap text-[0.9375rem] font-medium md:order-0 md:mx-0 md:w-auto lg:gap-1">
       {
         navItems.map((item) => (
           <li>
@@ -31,8 +46,34 @@ const navItems = [
         ))
       }
     </ul>
+
+    <span class="hidden h-5 w-px bg-border md:block" aria-hidden="true"></span>
+
+    <ul class="lang-switch flex items-center gap-0.5 rounded-full border border-line p-0.5 font-mono text-xs">
+      {
+        langLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              hreflang={link.code}
+              lang={link.code}
+              title={link.label}
+              aria-current={link.current ? "true" : undefined}
+              class:list={[
+                "inline-flex h-8 min-w-11 items-center justify-center gap-1.5 rounded-full px-2.5 uppercase tracking-wider no-underline transition-colors",
+                link.current ? "bg-surface text-fg" : "text-muted hover:text-fg",
+              ]}
+            >
+              {link.current && <span class="size-1.5 rounded-full bg-accent" aria-hidden="true" />}
+              {link.code}
+              <span class="sr-only"> — {link.name}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </nav>
-  <div id="scroll-progress" class="absolute bottom-[-1px] left-0 h-0.5 w-full origin-left bg-accent" style="transform: scaleX(0)" aria-hidden="true"></div>
+  <div id="scroll-progress" class="absolute -bottom-px left-0 h-0.5 w-full origin-left bg-accent" style="transform: scaleX(0)" aria-hidden="true"></div>
 </header>
 
 <script>

@@ -1,21 +1,10 @@
 ---
-const timeline = [
-  {
-    period: "2024 — teraz",
-    title: "Informatyka, [Nazwa uczelni]",
-    detail: "[Specjalność, tryb studiów]",
-  },
-  {
-    period: "[2025]",
-    title: "[Staż / praktyki — nazwa firmy]",
-    detail: "[Czym się zajmowałeś]",
-  },
-  {
-    period: "[2025]",
-    title: "[Nazwa certyfikatu, np. Cisco CCNA]",
-    detail: "[Status: ukończony / w trakcie]",
-  },
-];
+import { getTimeline } from "../data/projects";
+import { getLang, useTranslations } from "../i18n/utils";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const timeline = getTimeline(lang);
 ---
 
 <section
@@ -24,7 +13,7 @@ const timeline = [
   class="mx-auto flex max-w-5xl flex-wrap gap-8 border-t border-line px-6 py-20"
 >
   <h2 class="min-w-60 flex-1 font-mono text-3xl font-bold tracking-tight text-fg">
-    Doświadczenie
+    {t("experience.title")}
   </h2>
 
   <ol class="flex-999 min-w-80 space-y-7">

@@ -1,16 +1,20 @@
+---
+import { getLang, useTranslations } from "../i18n/utils";
+
+const t = useTranslations(getLang(Astro.currentLocale));
+---
+
 <section class="relative isolate mx-auto flex max-w-5xl flex-col gap-6 px-6 py-28">
   <div class="hero-glow" aria-hidden="true"></div>
   <h1
     style="--i: 0"
     class="hero-in font-mono text-5xl font-bold tracking-tight text-fg sm:text-6xl"
   >
-    Cześć, jestem Miłosz<span class="text-accent">.</span>
+    {t("hero.greeting")}<span class="text-accent">.</span>
   </h1>
 
   <p style="--i: 1" class="hero-in max-w-2xl text-xl text-fg-soft">
-    Studiuję informatykę. Dbam o to, żeby komputery, serwery i sieci w firmie
-    działały sprawnie i bezpiecznie — a po godzinach buduję własne urządzenia,
-    np. domową stację pogodową.
+    {t("hero.lead")}
   </p>
 
   <div style="--i: 2" class="hero-in flex flex-wrap gap-3 pt-2">
@@ -18,13 +22,13 @@
       href="#contact"
       class="inline-flex min-h-12 items-center rounded-md bg-accent px-6 font-semibold text-bg no-underline transition duration-200 hover:-translate-y-0.5 hover:bg-accent/85"
     >
-      Napisz do mnie
+      {t("hero.cta")}
     </a>
     <a
       href="/cv.pdf"
       class="inline-flex min-h-12 items-center rounded-md border border-border px-6 text-fg no-underline transition duration-200 hover:-translate-y-0.5 hover:border-fg"
     >
-      Pobierz CV (PDF)
+      {t("hero.cv")}
     </a>
   </div>
 </section>
