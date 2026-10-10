@@ -1,40 +1,139 @@
 ---
 import "../styles/global.css";
+import { site } from "../data/site";
+import { defaultLang, languages, localeTags, type Lang } from "../i18n/ui";
+import { getLang, localizedPath, useTranslations } from "../i18n/utils";
 
 interface Props {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 }
 
-const { title, description } = Astro.props;
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+
+const { title = t("meta.title"), description = t("meta.description") } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL("/og-image.png", Astro.site);
+
+// Ścieżka bez prefiksu języka, np. "/en/" -> "", żeby zbudować wersje językowe tej samej strony.
+const basePath = Astro.url.pathname.replace(new RegExp(`^/(${Object.keys(languages).join("|")})(?=/|$)`), "").replace(/^\/+/, "");
+const alternates = (Object.keys(languages) as Lang[]).map((code) => ({
+  code,
+  href: new URL(localizedPath(code, basePath), Astro.site).href,
+}));
+
+const sameAs = [site.github, site.linkedin].filter(Boolean);
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  url: new URL(localizedPath(lang), Astro.site).href,
+  email: `mailto:${site.email}`,
+  jobTitle: t("person.jobTitle"),
+  description,
+  knowsAbout: [
+    "System administration",
+    "Windows Server",
+    "Active Directory",
+    "Linux",
+    "Computer networking",
+    "IoT",
+    "ESP32",
+    "C++",
+    "TypeScript",
+  ],
+  sameAs,
+};
+const personJsonLd = JSON.stringify(personSchema).replace(/</g, "\\u003c");
+
+const analyticsEnabled = import.meta.env.PROD && site.goatcounterCode !== "";
 ---
 
 <!doctype html>
-<html lang="pl">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script is:inline>document.documentElement.classList.add("js");</script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
+    {alternates.map((alt) => <link rel="alternate" hreflang={alt.code} href={alt.href} />)}
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={alternates.find((alt) => alt.code === defaultLang)?.href}
+    />
+    <link rel="sitemap" href="/sitemap-index.xml" />
 
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#0d1117" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL("/og-image.png", Astro.site)} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={localeTags[lang].replace("-", "_")} />
+    {
+      alternates
+        .filter((alt) => alt.code !== lang)
+        .map((alt) => (
+          <meta property="og:locale:alternate" content={localeTags[alt.code].replace("-", "_")} />
+        ))
+    }
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL("/og-image.png", Astro.site)} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" is:inline set:html={personJsonLd} />
+
+    {
+      analyticsEnabled && (
+        <script
+          is:inline
+          async
+          data-goatcounter={`https://${site.goatcounterCode}.goatcounter.com/count`}
+          src="https://gc.zgo.at/count.js"
+        />
+      )
+    }
   </head>
-  <body class="bg-bg text-fg font-sans antialiased">
+  <body id="top" class="bg-bg text-fg font-sans antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:font-semibold focus:text-bg"
+    >
+      {t("a11y.skip")}
+    </a>
+
     <slot />
+
+    <button
+      type="button"
+      id="back-to-top"
+      class="back-to-top fixed right-5 bottom-5 z-30 inline-flex size-12 items-center justify-center rounded-full border border-border bg-surface text-fg shadow-lg hover:border-accent hover:text-accent"
+      aria-label={t("a11y.backToTop")}
+      title={t("a11y.backToTop")}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 19V5M5 12l7-7 7 7"></path>
+      </svg>
+    </button>
 
     <script>
       const revealEls = document.querySelectorAll("[data-reveal]");
@@ -52,6 +151,36 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       );
 
       revealEls.forEach((el) => revealObserver.observe(el));
+
+      const backToTop = document.getElementById("back-to-top");
+      const homeLink = document.querySelector<HTMLElement>("[data-home-link]");
+
+      if (backToTop) {
+        let ticking = false;
+
+        const update = () => {
+          backToTop.classList.toggle("is-shown", window.scrollY > window.innerHeight * 0.8);
+          ticking = false;
+        };
+
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(update);
+            }
+          },
+          { passive: true }
+        );
+        update();
+
+        backToTop.addEventListener("click", () => {
+          // Bez "behavior" przeglądarka bierze scroll-behavior z CSS (płynnie, chyba że reduced-motion).
+          window.scrollTo({ top: 0 });
+          homeLink?.focus({ preventScroll: true });
+        });
+      }
     </script>
   </body>
 </html>
