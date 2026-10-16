@@ -1,0 +1,74 @@
+---
+import { getCertificates, getTimeline } from "../data/projects";
+import { getLang, useTranslations } from "../i18n/utils";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const timeline = getTimeline(lang);
+const certificates = getCertificates(lang);
+
+const groups = [
+  { label: t("experience.work"), items: timeline.experience },
+  { label: t("experience.education"), items: timeline.education },
+].filter((group) => group.items.length > 0);
+---
+
+<section
+  id="experience"
+  data-reveal
+  class="mx-auto flex max-w-5xl flex-col gap-10 border-t border-line px-6 py-20"
+>
+  <h2 class="font-mono text-3xl font-bold tracking-tight text-fg">
+    {t("experience.title")}
+  </h2>
+
+  <div class="divide-y divide-line">
+    {
+      groups.map((group, i) => (
+        <div
+          style={`--i: ${i}`}
+          class="reveal-item flex flex-wrap gap-3 py-7 first:pt-0 sm:gap-6"
+        >
+          <h3 class="w-full shrink-0 font-mono text-sm text-muted sm:w-44">{group.label}</h3>
+          <ol class="min-w-0 flex-1 space-y-6">
+            {group.items.map((item) => (
+              <li>
+                <div class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
+                  <p class="font-semibold text-fg">{item.title}</p>
+                  <p class="order-first font-mono text-sm whitespace-pre-line text-muted sm:order-last sm:shrink-0 sm:text-right">
+                    {item.period}
+                  </p>
+                </div>
+                {item.place && <p class="text-fg-soft">{item.place}</p>}
+                {item.description && (
+                  <p class="mt-1.5 text-sm text-muted">{item.description}</p>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))
+    }
+
+    {
+      certificates.length > 0 && (
+        <div
+          style={`--i: ${groups.length}`}
+          class="reveal-item flex flex-wrap gap-3 py-7 last:pb-0 sm:gap-6"
+        >
+          <h3 class="w-full shrink-0 font-mono text-sm text-muted sm:w-44">
+            {t("experience.certificates")}
+          </h3>
+          <ul class="min-w-0 flex-1 space-y-4">
+            {certificates.map((cert) => (
+              <li>
+                <p class="font-semibold text-fg">{cert.name}</p>
+                <p class="text-fg-soft">{cert.issuer}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </div>
+</section>
