@@ -1,0 +1,41 @@
+---
+import { getInterests } from "../data/projects";
+import { getLang, useTranslations } from "../i18n/utils";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+
+const tagGroups = [
+  { label: t("about.interests"), items: getInterests(lang) },
+];
+---
+
+<section
+  id="about"
+  data-reveal
+  class="mx-auto flex max-w-5xl flex-wrap gap-8 border-t border-line px-6 py-20"
+>
+  <h2 class="min-w-60 flex-1 font-mono text-3xl font-bold tracking-tight text-fg">
+    {t("about.title")}
+  </h2>
+
+  <div class="flex-999 min-w-[min(20rem,100%)] space-y-4 text-lg text-fg-soft">
+    <p>{t("about.p1")}</p>
+    <p>{t("about.p2")}</p>
+
+    {
+      tagGroups.map((group) => (
+        <div class="pt-4">
+          <h3 class="mb-3 font-mono text-sm text-muted">{group.label}</h3>
+          <ul class="flex flex-wrap gap-2">
+            {group.items.map((item) => (
+              <li class="rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm text-fg-soft">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,156 @@
+---
+import { site } from "../data/site";
+import { getLang, useTranslations } from "../i18n/utils";
+
+const t = useTranslations(getLang(Astro.currentLocale));
+
+// Ikony w stylu Lucide (obrys 2px), wstawiane do <svg> przez set:html
+const icons = {
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  github:
+    '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
+  linkedin:
+    '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>',
+  arrow: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+};
+
+const [emailUser, emailDomain] = site.email.split("@");
+
+const mailto = `mailto:${site.email}?subject=${encodeURIComponent(t("contact.mailSubject"))}`;
+
+const profiles = [
+  { label: "GitHub", href: site.github, icon: icons.github },
+  { label: "LinkedIn", href: site.linkedin, icon: icons.linkedin },
+]
+  .filter((profile) => profile.href !== "")
+  .map((profile) => ({
+    ...profile,
+    // Pokazujemy adres bez "https://", np. github.com/miloszekxk
+    display: profile.href.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "").split("/"),
+  }));
+
+const iconBox =
+  "flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-bg text-accent";
+const svgAttrs = {
+  xmlns: "http://www.w3.org/2000/svg",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  "aria-hidden": "true",
+} as const;
+---
+
+<section
+  id="contact"
+  data-reveal
+  class="mx-auto grid max-w-5xl gap-10 border-t border-line px-6 py-24 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-center md:gap-14"
+>
+  <div class="flex flex-col items-start gap-6">
+    <h2 class="font-mono text-4xl font-bold tracking-tight text-fg">
+      {t("contact.title")}<span class="text-accent">.</span>
+    </h2>
+
+    <p class="max-w-xl text-lg text-fg-soft">
+      {t("contact.lead")}
+    </p>
+
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-3 pt-1">
+      <a
+        href={mailto}
+        class="inline-flex min-h-12 items-center gap-2 rounded-md bg-accent px-6 font-semibold text-bg no-underline transition duration-200 hover:-translate-y-0.5 hover:bg-accent/85"
+      >
+        <svg {...svgAttrs} width="18" height="18" set:html={icons.mail} />
+        {t("contact.cta")}
+      </a>
+      <p class="text-sm text-muted">{t("contact.reply")}</p>
+    </div>
+  </div>
+
+  <ul class="divide-y divide-line overflow-hidden rounded-xl border border-border bg-surface">
+    <li class="flex items-center gap-3 p-4 sm:gap-4 sm:p-5">
+      <span class={iconBox}>
+        <svg {...svgAttrs} width="18" height="18" set:html={icons.mail} />
+      </span>
+      <div class="min-w-0 flex-1">
+        <p class="font-mono text-xs text-muted">{t("contact.email")}</p>
+        <a
+          href={mailto}
+          class="inline-block py-0.5 font-medium text-fg no-underline wrap-break-word transition-colors hover:text-accent"
+        >
+          {emailUser}<wbr />@{emailDomain}
+        </a>
+      </div>
+      <button
+        type="button"
+        data-copy={site.email}
+        data-copied-label={t("contact.copied")}
+        aria-label={t("contact.copyLabel")}
+        title={t("contact.copy")}
+        class="copy-btn inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-fg hover:text-fg"
+      >
+        <svg {...svgAttrs} width="16" height="16" class="copy-icon" set:html={icons.copy} />
+        <svg {...svgAttrs} width="16" height="16" class="check-icon" set:html={icons.check} />
+      </button>
+      <span class="sr-only" aria-live="polite" data-copy-status></span>
+    </li>
+
+    {
+      profiles.map((profile) => (
+        <li>
+          <a
+            href={profile.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-center gap-3 p-4 no-underline sm:gap-4 sm:p-5 transition-colors hover:bg-bg/40"
+          >
+            <span class={iconBox}>
+              <svg {...svgAttrs} width="18" height="18" set:html={profile.icon} />
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="font-mono text-xs text-muted">{profile.label}</p>
+              <p class="font-medium text-fg wrap-break-word transition-colors group-hover:text-accent">
+                {profile.display.map((part, i) => (i === 0 ? part : <><wbr />/{part}</>))}
+              </p>
+            </div>
+            <svg
+              {...svgAttrs}
+              width="18"
+              height="18"
+              class="shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent"
+              set:html={icons.arrow}
+            />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((button) => {
+    const status = button.parentElement?.querySelector<HTMLElement>("[data-copy-status]");
+    let timer: number | undefined;
+
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? "");
+      } catch {
+        // Brak dostępu do schowka: adres i tak jest widoczny obok, więc tylko nie pokazujemy "Skopiowano"
+        return;
+      }
+
+      button.dataset.copied = "true";
+      if (status) status.textContent = button.dataset.copiedLabel ?? "";
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        delete button.dataset.copied;
+        if (status) status.textContent = "";
+      }, 2000);
+    });
+  });
+</script>
