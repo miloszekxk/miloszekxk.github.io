@@ -153,6 +153,8 @@ const analyticsEnabled = import.meta.env.PROD && site.goatcounterCode !== "";
     </button>
 
     <script>
+      import "../scripts/effects";
+
       const revealEls = document.querySelectorAll("[data-reveal]");
 
       const revealObserver = new IntersectionObserver(
