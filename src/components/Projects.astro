@@ -18,8 +18,8 @@ const projects = getProjects(lang);
 
   <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
     {
-      projects.map((project, i) => (
-        <article style={`--i: ${i}`} class="card reveal-item flex flex-col gap-4 rounded-xl border border-border bg-surface p-7">
+      projects.map((project) => (
+        <article class="card reveal-item flex flex-col gap-4 rounded-xl border border-border bg-surface p-7">
           <span class="text-sm font-medium text-accent">{project.tag}</span>
 
           <h3 class="font-mono text-xl font-bold text-fg">{project.name}</h3>

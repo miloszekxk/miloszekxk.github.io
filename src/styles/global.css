@@ -230,7 +230,78 @@ html {
 }
 
 #scroll-progress {
+  transform: scaleX(0);
   will-change: transform;
+}
+
+/* Kolejność elementów do stopniowania animacji (--i, --d) liczona w CSS, a nie w atrybutach
+   style="", bo te blokuje Content Security Policy */
+.hero-in:nth-child(1 of .hero-in) {
+  --i: 0;
+}
+
+.hero-in:nth-child(2 of .hero-in) {
+  --i: 1;
+}
+
+.hero-in:nth-child(3 of .hero-in) {
+  --i: 2;
+}
+
+.reveal-item:nth-child(1 of .reveal-item) {
+  --i: 0;
+}
+
+.reveal-item:nth-child(2 of .reveal-item) {
+  --i: 1;
+}
+
+.reveal-item:nth-child(3 of .reveal-item) {
+  --i: 2;
+}
+
+.reveal-item:nth-child(4 of .reveal-item) {
+  --i: 3;
+}
+
+.reveal-item:nth-child(5 of .reveal-item) {
+  --i: 4;
+}
+
+.reveal-item:nth-child(6 of .reveal-item) {
+  --i: 5;
+}
+
+.reveal-item:nth-child(7 of .reveal-item) {
+  --i: 6;
+}
+
+.reveal-item:nth-child(8 of .reveal-item) {
+  --i: 7;
+}
+
+.timeline-item:nth-child(1 of .timeline-item) {
+  --d: 0;
+}
+
+.timeline-item:nth-child(2 of .timeline-item) {
+  --d: 1;
+}
+
+.timeline-item:nth-child(3 of .timeline-item) {
+  --d: 2;
+}
+
+.timeline-item:nth-child(4 of .timeline-item) {
+  --d: 3;
+}
+
+.timeline-item:nth-child(5 of .timeline-item) {
+  --d: 4;
+}
+
+.timeline-item:nth-child(6 of .timeline-item) {
+  --d: 5;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -285,6 +356,27 @@ html {
 }
 
 /* ===== Efekty interaktywne (logika w src/scripts/effects.ts) ===== */
+
+/* Odszyfrowywanie nagłówków: prawdziwy tekst staje się na chwilę przezroczysty,
+   a losowe znaki rysuje nakładka (nie są częścią treści strony, więc Google ich nie widzi).
+   Zielona kropka w <span class="text-accent"> zostaje widoczna przez cały czas. */
+[data-scramble] {
+  position: relative;
+}
+
+[data-scramble].is-scrambling {
+  color: transparent;
+}
+
+[data-scramble].is-scrambling::before {
+  content: attr(data-scramble-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: var(--color-fg);
+  pointer-events: none;
+}
 
 /* Żywa sieć w tle hero: pojawia się dopiero, gdy skrypt zacznie rysować */
 .network-canvas {

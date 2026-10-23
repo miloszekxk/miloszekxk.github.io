@@ -9,12 +9,14 @@ const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 const GLYPHS = "!<>-_\\/[]{}=+*^?#01";
 
 function scramble(el: HTMLElement) {
-  // Animujemy tylko pierwszy węzeł tekstowy (np. bez zielonej kropki w <span>)
+  // Animujemy tylko pierwszy węzeł tekstowy (np. bez zielonej kropki w <span>).
+  // Prawdziwy tekst w DOM się NIE zmienia (czyta go Google i czytniki ekranu):
+  // losowe znaki są rysowane nakładką ::before z atrybutu data-scramble-text (global.css).
   const node = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim());
   if (!node || el.dataset.scrambled) return;
   el.dataset.scrambled = "true";
 
-  const final = node.textContent ?? "";
+  const final = (node.textContent ?? "").trim();
   const duration = Math.min(1100, 350 + final.length * 35);
   const start = performance.now();
 
@@ -28,10 +30,15 @@ function scramble(el: HTMLElement) {
       const ch = final[i];
       out += ch === " " || t >= lockAt[i] ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
     }
-    node.textContent = out;
-    if (t < duration) requestAnimationFrame(frame);
-    else node.textContent = final;
+    el.dataset.scrambleText = out;
+    if (t < duration) {
+      requestAnimationFrame(frame);
+    } else {
+      el.classList.remove("is-scrambling");
+      delete el.dataset.scrambleText;
+    }
   };
+  el.classList.add("is-scrambling");
   requestAnimationFrame(frame);
 }
 

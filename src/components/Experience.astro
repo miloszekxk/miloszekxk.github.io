@@ -24,15 +24,14 @@ const groups = [
 
   <div class="divide-y divide-line">
     {
-      groups.map((group, i) => (
+      groups.map((group) => (
         <div
-          style={`--i: ${i}`}
           class="reveal-item flex flex-wrap gap-3 py-7 first:pt-0 sm:gap-6"
         >
           <h3 class="w-full shrink-0 font-mono text-sm text-muted sm:w-44">{group.label}</h3>
           <ol class="timeline min-w-0 flex-1 space-y-6">
-            {group.items.map((item, j) => (
-              <li class="timeline-item" style={`--d: ${j}`}>
+            {group.items.map((item) => (
+              <li class="timeline-item">
                 <div class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
                   <p class="font-semibold text-fg">{item.title}</p>
                   <p class="order-first font-mono text-sm whitespace-pre-line text-muted sm:order-last sm:shrink-0 sm:text-right">
@@ -53,7 +52,6 @@ const groups = [
     {
       certificates.length > 0 && (
         <div
-          style={`--i: ${groups.length}`}
           class="reveal-item flex flex-wrap gap-3 py-7 last:pb-0 sm:gap-6"
         >
           <h3 class="w-full shrink-0 font-mono text-sm text-muted sm:w-44">
