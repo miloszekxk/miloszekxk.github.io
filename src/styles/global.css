@@ -21,6 +21,15 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/* Przy mocno powiększonej czcionce (np. 200% w ustawieniach) nagłówki i adres e-mail mogą
+   w ostateczności złamać zbyt długie słowo, zamiast wychodzić poza ekran */
+h1,
+h2,
+h3,
+.break-long {
+  overflow-wrap: anywhere;
+}
+
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
@@ -102,8 +111,8 @@ html {
 
 /* Hero: kolejne elementy wchodzą jeden po drugim */
 .hero-in {
-  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--i, 0) * 140ms + 100ms);
+  animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms + 60ms);
 }
 
 .hero-glow {
@@ -575,4 +584,12 @@ html {
   .btn-shine::after {
     display: none;
   }
+}
+
+/* Wydajność: sekcje poniżej ekranu przeglądarka układa dopiero, gdy się do nich zbliżasz.
+   Przy wejściu na stronę liczy więc tylko nagłówek i hero (krótsze pierwsze ładowanie na słabych telefonach).
+   contain-intrinsic-size: szacunkowa wysokość sekcji, żeby pasek przewijania nie skakał. */
+main > section[data-reveal] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
 }

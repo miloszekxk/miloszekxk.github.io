@@ -6,7 +6,9 @@ const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 
 /* ---------- 1. Odszyfrowywanie tekstu nagłówków ---------- */
 
-const GLYPHS = "!<>-_\\/[]{}=+*^?#01";
+// Tylko znaki, przy których przeglądarka nie łamie linii (bez "-" czy "/"),
+// żeby losowe znaki zawijały się dokładnie jak prawdziwy tekst
+const GLYPHS = "#*=<>_^@01";
 
 function scramble(el: HTMLElement) {
   // Animujemy tylko pierwszy węzeł tekstowy (np. bez zielonej kropki w <span>).
@@ -80,7 +82,9 @@ function initNetwork() {
   const mouse = { x: -9999, y: -9999 };
 
   const resize = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Na dotyku (zwykle słabsze telefony) mniejsza rozdzielczość płótna: przy cienkich liniach
+    // różnicy nie widać, a płótno jest kilka razy lżejsze do narysowania
+    const dpr = Math.min(window.devicePixelRatio || 1, finePointer.matches ? 2 : 1.25);
     width = canvas.clientWidth;
     height = canvas.clientHeight;
     canvas.width = width * dpr;
@@ -97,12 +101,28 @@ function initNetwork() {
     }));
   };
 
-  const draw = () => {
+  // Limit klatek: ruch jest powolny, więc 60 kl./s wystarczy nawet na monitorze 144 Hz,
+  // a na urządzeniach dotykowych (zwykle słabszych) 30 kl./s
+  const FRAME_MS = finePointer.matches ? 1000 / 60 : 1000 / 30;
+  // Linie o podobnej przezroczystości rysujemy jedną ścieżką (kilka wywołań stroke zamiast setek)
+  const LEVELS = 4;
+  const gray: Path2D[] = [];
+  const green: Path2D[] = [];
+  let last = 0;
+
+  const draw = (now: number) => {
+    if (!running) return;
+    requestAnimationFrame(draw);
+    if (now - last < FRAME_MS - 1) return;
+    // Prędkość niezależna od liczby klatek na sekundę
+    const step = last ? Math.min((now - last) / (1000 / 60), 3) : 1;
+    last = now;
+
     ctx.clearRect(0, 0, width, height);
 
     for (const n of nodes) {
-      n.x += n.vx;
-      n.y += n.vy;
+      n.x += n.vx * step;
+      n.y += n.vy * step;
       if (n.x < 0 || n.x > width) n.vx *= -1;
       if (n.y < 0 || n.y > height) n.vy *= -1;
 
@@ -111,10 +131,16 @@ function initNetwork() {
       const dy = n.y - mouse.y;
       const d = Math.hypot(dx, dy);
       if (d < 90 && d > 0) {
-        n.x += (dx / d) * 0.9;
-        n.y += (dy / d) * 0.9;
+        n.x += (dx / d) * 0.9 * step;
+        n.y += (dy / d) * 0.9 * step;
       }
     }
+
+    for (let l = 0; l < LEVELS; l++) {
+      gray[l] = new Path2D();
+      green[l] = new Path2D();
+    }
+    const near: boolean[] = [];
 
     for (let i = 0; i < nodes.length; i++) {
       const a = nodes[i];
@@ -122,38 +148,50 @@ function initNetwork() {
         const b = nodes[j];
         const d = Math.hypot(a.x - b.x, a.y - b.y);
         if (d < LINK) {
-          ctx.strokeStyle = `rgba(157, 167, 179, ${(1 - d / LINK) * 0.3})`;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.stroke();
+          const path = gray[Math.min(LEVELS - 1, Math.floor((1 - d / LINK) * LEVELS))];
+          path.moveTo(a.x, a.y);
+          path.lineTo(b.x, b.y);
         }
       }
 
       // Połączenia z kursorem w kolorze akcentu
       const dm = Math.hypot(a.x - mouse.x, a.y - mouse.y);
-      if (dm < MOUSE) {
-        ctx.strokeStyle = `rgba(126, 231, 135, ${(1 - dm / MOUSE) * 0.7})`;
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(mouse.x, mouse.y);
-        ctx.stroke();
+      near[i] = dm < MOUSE;
+      if (near[i]) {
+        const path = green[Math.min(LEVELS - 1, Math.floor((1 - dm / MOUSE) * LEVELS))];
+        path.moveTo(a.x, a.y);
+        path.lineTo(mouse.x, mouse.y);
       }
-
-      ctx.fillStyle = dm < MOUSE ? "rgba(126, 231, 135, 1)" : "rgba(157, 167, 179, 0.7)";
-      ctx.beginPath();
-      ctx.arc(a.x, a.y, dm < MOUSE ? 2.2 : 1.6, 0, Math.PI * 2);
-      ctx.fill();
     }
 
-    if (running) requestAnimationFrame(draw);
+    for (let l = 0; l < LEVELS; l++) {
+      const strength = (l + 0.5) / LEVELS;
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(157, 167, 179, ${strength * 0.3})`;
+      ctx.stroke(gray[l]);
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = `rgba(126, 231, 135, ${strength * 0.7})`;
+      ctx.stroke(green[l]);
+    }
+
+    const dotsGray = new Path2D();
+    const dotsGreen = new Path2D();
+    nodes.forEach((n, i) => {
+      const path = near[i] ? dotsGreen : dotsGray;
+      const r = near[i] ? 2.2 : 1.6;
+      path.moveTo(n.x + r, n.y);
+      path.arc(n.x, n.y, r, 0, Math.PI * 2);
+    });
+    ctx.fillStyle = "rgba(157, 167, 179, 0.7)";
+    ctx.fill(dotsGray);
+    ctx.fillStyle = "rgba(126, 231, 135, 1)";
+    ctx.fill(dotsGreen);
   };
 
   const start = () => {
     if (running || !visible || document.hidden) return;
     running = true;
+    last = 0;
     requestAnimationFrame(draw);
   };
   const stop = () => (running = false);
@@ -283,10 +321,14 @@ document.addEventListener("animationend", (e) => {
   if (el.classList?.contains("reveal-item")) el.classList.add("revealed");
 });
 
+// Efekty, które nie są potrzebne w pierwszej sekundzie, startują, gdy przeglądarka skończy
+// ładowanie i jest bezczynna. Dzięki temu nie spowalniają wejścia na stronę na słabszych telefonach.
+const whenIdle = (fn: () => void) =>
+  typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 300);
+
 if (!reduceMotion.matches) {
+  // Nagłówek hero odszyfrowuje się od razu, więc ten efekt startuje bez czekania
   initScramble();
-  initNetwork();
-  initCards();
-  initMagnetic();
-  initConfetti();
+  // Każdy efekt w osobnym, krótkim kroku zamiast jednego długiego zadania
+  [initNetwork, initCards, initMagnetic, initConfetti].forEach((init) => whenIdle(init));
 }
