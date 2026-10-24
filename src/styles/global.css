@@ -1,5 +1,4 @@
 @import "tailwindcss";
-/* Tylko alfabet łaciński z polskimi znakami (latin-ext): mniejszy CSS blokujący pierwsze wyświetlenie */
 @import "@fontsource/ibm-plex-sans/latin-400.css";
 @import "@fontsource/ibm-plex-sans/latin-ext-400.css";
 @import "@fontsource/ibm-plex-sans/latin-600.css";
@@ -21,8 +20,7 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Przy mocno powiększonej czcionce (np. 200% w ustawieniach) nagłówki i adres e-mail mogą
-   w ostateczności złamać zbyt długie słowo, zamiast wychodzić poza ekran */
+/* Długie słowa przy powiększonej czcionce (WCAG 1.4.4) */
 h1,
 h2,
 h3,
@@ -33,7 +31,6 @@ h3,
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
-  /* Kotwice (#about itd.) nie chowają się pod przyklejonym nagłówkiem */
   scroll-padding-top: 7.5rem;
 }
 
@@ -43,7 +40,6 @@ html {
   }
 }
 
-/* Przycisk "wróć na górę": ukryty, dopóki nie przewinie się strony */
 .back-to-top {
   opacity: 0;
   visibility: hidden;
@@ -109,7 +105,6 @@ html {
   }
 }
 
-/* Hero: kolejne elementy wchodzą jeden po drugim */
 .hero-in {
   animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: calc(var(--i, 0) * 110ms + 60ms);
@@ -131,14 +126,12 @@ html {
   filter: blur(20px);
 }
 
-/* Na wąskich ekranach poświata nie może wystawać za prawą krawędź (poziomy scroll) */
 @media (max-width: 1100px) {
   .hero-glow {
     right: 0;
   }
 }
 
-/* Karty i elementy listy: kaskadowe pojawianie się po odsłonięciu sekcji */
 .js [data-reveal] .reveal-item {
   opacity: 0;
 }
@@ -148,15 +141,18 @@ html {
   animation-delay: calc(var(--i, 0) * 100ms + 150ms);
 }
 
-/* Unoszenie kart (własność translate nie koliduje z animacją transform) */
+/* translate, bo transform zajmuje animacja wejścia */
 .card {
+  position: relative;
+  isolation: isolate;
   transition:
     border-color 0.2s ease,
     box-shadow 0.3s ease,
-    translate 0.3s ease;
+    translate 0.3s ease,
+    transform 0.25s ease-out;
 }
 
-/* Tylko dla myszy: na dotyku :hover "przykleja się" po tapnięciu */
+/* Na dotyku :hover zostaje po tapnięciu */
 @media (hover: hover) {
   .card:hover {
     translate: 0 -4px;
@@ -165,7 +161,6 @@ html {
   }
 }
 
-/* Nagłówek chowany przy przewijaniu w dół na małych ekranach (klasa z Header.astro) */
 .site-header {
   transition: translate 0.25s ease;
 }
@@ -174,8 +169,6 @@ html {
   translate: 0 -100%;
 }
 
-/* Pasek linków na telefonie/tablecie: przewijany w bok, bez paska przewijania,
-   z wygaszeniem krawędzi, po której jest jeszcze coś do zobaczenia */
 .nav-scroll {
   scrollbar-width: none;
   --fade-start: 0px;
@@ -207,7 +200,6 @@ html {
   }
 }
 
-/* Nawigacja: animowane podkreślenie */
 [data-nav-link] {
   position: relative;
 }
@@ -243,8 +235,7 @@ html {
   will-change: transform;
 }
 
-/* Kolejność elementów do stopniowania animacji (--i, --d) liczona w CSS, a nie w atrybutach
-   style="", bo te blokuje Content Security Policy */
+/* Kolejność animacji w CSS, bo style="" blokuje CSP */
 .hero-in:nth-child(1 of .hero-in) {
   --i: 0;
 }
@@ -349,7 +340,6 @@ html {
   }
 }
 
-/* Kontakt: przycisk "Kopiuj" pokazuje ptaszek po skopiowaniu adresu */
 .copy-btn .check-icon,
 .copy-btn[data-copied] .copy-icon {
   display: none;
@@ -364,11 +354,7 @@ html {
   color: var(--color-accent);
 }
 
-/* ===== Efekty interaktywne (logika w src/scripts/effects.ts) ===== */
-
-/* Odszyfrowywanie nagłówków: prawdziwy tekst staje się na chwilę przezroczysty,
-   a losowe znaki rysuje nakładka (nie są częścią treści strony, więc Google ich nie widzi).
-   Zielona kropka w <span class="text-accent"> zostaje widoczna przez cały czas. */
+/* Nakładka nie zmienia tekstu w DOM (SEO) */
 [data-scramble] {
   position: relative;
 }
@@ -387,7 +373,6 @@ html {
   pointer-events: none;
 }
 
-/* Żywa sieć w tle hero: pojawia się dopiero, gdy skrypt zacznie rysować */
 .network-canvas {
   position: absolute;
   inset: 0;
@@ -403,16 +388,9 @@ html {
   opacity: 1;
 }
 
-/* Po animacji wejścia karta jest "zwolniona", żeby przechylenie 3D mogło działać */
 .js [data-reveal].is-visible .reveal-item.revealed {
   animation: none;
   opacity: 1;
-}
-
-/* Karty: podświetlenie podążające za kursorem */
-.card {
-  position: relative;
-  isolation: isolate;
 }
 
 .card::before {
@@ -437,15 +415,6 @@ html {
   }
 }
 
-.card {
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.3s ease,
-    translate 0.3s ease,
-    transform 0.25s ease-out;
-}
-
-/* Przyciski: błysk przesuwający się przy najechaniu */
 .btn-shine {
   position: relative;
   overflow: hidden;
@@ -467,7 +436,6 @@ html {
   }
 }
 
-/* Nagłówki sekcji: zielona kreska rysuje się pod spodem */
 [data-reveal] h2::after {
   content: "";
   display: block;
@@ -488,7 +456,6 @@ html {
   transform: scaleX(1);
 }
 
-/* Oś czasu: linia rysuje się z góry na dół, kropki wskakują po kolei */
 .timeline {
   position: relative;
   padding-left: 1.5rem;
@@ -553,7 +520,6 @@ html {
   animation-delay: calc(0.5s + var(--d, 0) * 0.25s);
 }
 
-/* Konfetti po skopiowaniu e-maila */
 .confetti {
   position: fixed;
   z-index: 60;
@@ -586,9 +552,6 @@ html {
   }
 }
 
-/* Wydajność: sekcje poniżej ekranu przeglądarka układa dopiero, gdy się do nich zbliżasz.
-   Przy wejściu na stronę liczy więc tylko nagłówek i hero (krótsze pierwsze ładowanie na słabych telefonach).
-   contain-intrinsic-size: szacunkowa wysokość sekcji, żeby pasek przewijania nie skakał. */
 main > section[data-reveal] {
   content-visibility: auto;
   contain-intrinsic-size: auto 700px;

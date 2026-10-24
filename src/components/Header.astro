@@ -31,7 +31,6 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
       Miłosz Baron<span class="cursor-blink text-accent">_</span>
     </a>
 
-    <!-- Poniżej 1024 px: logo i język w pierwszym rzędzie, linki w drugim (przewijane w bok, gdy się nie mieszczą) -->
     <ul
       data-nav-list
       class="nav-scroll order-last -mx-4 flex w-[calc(100%+2rem)] overflow-x-auto px-2 py-1 text-sm font-medium sm:text-[0.9375rem] lg:order-0 lg:mx-0 lg:w-auto lg:gap-1 lg:overflow-visible lg:px-0 lg:py-0"
@@ -53,7 +52,7 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
 
     <span class="hidden h-5 w-px bg-border lg:block" aria-hidden="true"></span>
 
-    <ul class="lang-switch flex items-center gap-0.5 rounded-full border border-line p-0.5 font-mono text-xs">
+    <ul class="flex items-center gap-0.5 rounded-full border border-line p-0.5 font-mono text-xs">
       {
         langLinks.map((link) => (
           <li>
@@ -91,7 +90,6 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   function setActive(id: string) {
-    // Powrót nad pierwszą sekcję (hero): żaden link nie jest aktywny, pasek linków wraca na początek
     if (id === "" && navList) {
       navList.scrollTo({ left: 0, behavior: reduceMotion.matches ? "auto" : "smooth" });
     }
@@ -105,19 +103,16 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
     });
   }
 
-  // Gdy linki są przewijane w bok, wskazany link przesuwa się na środek paska
   function centerInNav(link: HTMLElement) {
     if (!navList || navList.scrollWidth <= navList.clientWidth) return;
     const left = link.offsetLeft - (navList.clientWidth - link.offsetWidth) / 2;
     navList.scrollTo({ left, behavior: reduceMotion.matches ? "auto" : "smooth" });
   }
 
-  // Nawigacja klawiaturą: link z fokusem nie może zostać schowany za krawędzią paska
   navList?.addEventListener("focusin", (event) => {
     if (event.target instanceof HTMLElement) centerInNav(event.target);
   });
 
-  // Wygaszenie krawędzi paska linków, gdy w danym kierunku jest jeszcze coś do przewinięcia
   function updateNavFade() {
     if (!navList) return;
     const max = navList.scrollWidth - navList.clientWidth;
@@ -133,8 +128,7 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
       if (visible) {
         setActive(visible.target.id);
       } else if (sections[0] && sections[0].getBoundingClientRect().top > window.innerHeight / 2) {
-        // Nad pierwszą sekcją (np. po skoku na górę): przeglądarka nie zgłasza zmiany dla "O mnie",
-        // bo była poza widokiem i przed skokiem, i po nim, więc pozycję sprawdzamy wprost
+        // Po skoku na górę "O mnie" nie zgłasza zmiany widoczności
         setActive("");
       }
     },
@@ -145,13 +139,11 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
 
   const header = document.getElementById("site-header");
   const progress = document.getElementById("scroll-progress");
-  // Na telefonie (i w poziomie) nagłówek chowa się przy przewijaniu w dół, wraca przy przewijaniu w górę
   const compactScreen = window.matchMedia("(max-width: 1023px), (max-height: 500px)");
   let lastY = 0;
   let ticking = false;
 
   function onScroll() {
-    // Najpierw wszystkie odczyty wymiarów, potem zapisy stylów: bez wymuszonego przeliczania układu
     const y = window.scrollY;
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const headerHeight = header?.offsetHeight ?? 0;
@@ -184,11 +176,8 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
     },
     { passive: true }
   );
-  // Nawigacja klawiaturą (Tab) zawsze pokazuje nagłówek
   header?.addEventListener("focusin", () => header.classList.remove("is-hidden"));
-  // Pierwszy pomiar dopiero po załadowaniu strony: wtedy układ jest już policzony,
-  // a odczyt wymiarów w trakcie ładowania wymuszałby dodatkowe przeliczenie.
-  // Potrzebny tylko, gdy strona otworzy się przewinięta (odświeżenie w połowie, link z #kotwicą).
+  // Pomiar po load, żeby nie wymuszać układu w trakcie ładowania
   const initScroll = () => {
     lastY = window.scrollY;
     if (lastY > 0) onScroll();

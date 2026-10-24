@@ -7,7 +7,6 @@ export type Lang = keyof typeof languages;
 
 export const defaultLang: Lang = "pl";
 
-/** Pełne kody regionów dla hreflang, og:locale i sitemapy. */
 export const localeTags: Record<Lang, string> = {
   pl: "pl-PL",
   en: "en-US",

@@ -9,7 +9,6 @@ export function useTranslations(lang: Lang) {
   return (key: UiKey) => ui[lang][key] ?? ui[defaultLang][key];
 }
 
-/** Adres tej samej strony w innym języku, np. "/" -> "/en/". */
 export function localizedPath(lang: Lang, path = "") {
   return getRelativeLocaleUrl(lang, path);
 }

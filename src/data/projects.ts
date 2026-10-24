@@ -4,7 +4,6 @@ type Localized<T> = Record<Lang, T>;
 
 export interface ProjectLink {
   url: string;
-  /** Własny podpis przycisku; bez niego przycisk to "Zobacz projekt". */
   label?: string;
 }
 
@@ -19,7 +18,6 @@ export interface Project {
 const projectData: {
   text: Localized<Pick<Project, "tag" | "name" | "description">>;
   stack: string;
-  /** Kilka linków, gdy karta opisuje więcej niż jedno repozytorium. */
   links: { url: string; label?: Localized<string> }[];
 }[] = [
   {
@@ -187,7 +185,6 @@ export function getSkillGroups(lang: Lang): SkillGroup[] {
 export interface TimelineItem {
   period: string;
   title: string;
-  /** Opcjonalnie: bez nazw szkół, firm i miejscowości (prywatność). */
   place?: string;
   description?: string;
 }
@@ -267,7 +264,6 @@ export interface Certificate {
   issuer: string;
 }
 
-/** Zwykły tekst = ten sam w obu językach (np. oficjalne angielskie nazwy kursów Cisco). */
 type MaybeLocalized = string | Localized<string>;
 
 const certificateData: { name: MaybeLocalized; issuer: MaybeLocalized }[] = [

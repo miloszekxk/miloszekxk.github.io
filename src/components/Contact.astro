@@ -4,7 +4,6 @@ import { getLang, useTranslations } from "../i18n/utils";
 
 const t = useTranslations(getLang(Astro.currentLocale));
 
-// Ikony w stylu Lucide (obrys 2px), wstawiane do <svg> przez set:html
 const icons = {
   mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
   github:
@@ -27,7 +26,6 @@ const profiles = [
   .filter((profile) => profile.href !== "")
   .map((profile) => ({
     ...profile,
-    // Pokazujemy adres bez "https://", np. github.com/miloszekxk
     display: profile.href.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "").split("/"),
   }));
 
@@ -141,12 +139,10 @@ const svgAttrs = {
       try {
         await navigator.clipboard.writeText(button.dataset.copy ?? "");
       } catch {
-        // Brak dostępu do schowka: adres i tak jest widoczny obok, więc tylko nie pokazujemy "Skopiowano"
         return;
       }
 
       button.dataset.copied = "true";
-      // Sygnał dla efektów (konfetti w src/scripts/effects.ts)
       document.dispatchEvent(new CustomEvent("copy-success", { detail: button }));
       if (status) status.textContent = button.dataset.copiedLabel ?? "";
       window.clearTimeout(timer);

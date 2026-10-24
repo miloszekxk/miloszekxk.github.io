@@ -192,12 +192,10 @@ const analyticsEnabled = import.meta.env.PROD && site.goatcounterCode !== "";
           },
           { passive: true }
         );
-        // Jak w nagłówku: pierwszy odczyt pozycji dopiero po załadowaniu strony
         if (document.readyState === "complete") update();
         else window.addEventListener("load", update, { once: true });
 
         backToTop.addEventListener("click", () => {
-          // Bez "behavior" przeglądarka bierze scroll-behavior z CSS (płynnie, chyba że reduced-motion).
           window.scrollTo({ top: 0 });
           homeLink?.focus({ preventScroll: true });
         });

@@ -9,10 +9,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://miloszekxk.github.io',
 
-  // Content Security Policy: przeglądarka uruchomi tylko skrypty i style tej strony
-  // (Astro sam dopisuje ich odciski sha256). GitHub Pages nie ustawia nagłówków,
-  // więc CSP trafia do <meta> w każdej stronie.
-  // Po włączeniu analityki GoatCounter (src/data/site.ts) trzeba tu dopuścić jej domeny.
+  // CSP w <meta>, bo GitHub Pages nie ustawia nagłówków. GoatCounter wymaga dopisania domen.
   security: {
     csp: {
       directives: [
