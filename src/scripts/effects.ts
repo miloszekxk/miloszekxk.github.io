@@ -1,4 +1,3 @@
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 
 // Bez "-" i "/", żeby nakładka łamała linie jak prawdziwy tekst
@@ -319,7 +318,6 @@ document.addEventListener("animationend", (e) => {
 const whenIdle = (fn: () => void) =>
   typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 300);
 
-if (!reduceMotion.matches) {
-  initScramble();
-  [initNetwork, initCards, initMagnetic, initConfetti].forEach((init) => whenIdle(init));
-}
+// Celowo bez prefers-reduced-motion: animacje działają u wszystkich
+initScramble();
+[initNetwork, initCards, initMagnetic, initConfetti].forEach((init) => whenIdle(init));

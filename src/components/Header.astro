@@ -87,11 +87,10 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
     .filter((section): section is HTMLElement => section !== null);
 
   const navList = document.querySelector<HTMLElement>("[data-nav-list]");
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   function setActive(id: string) {
     if (id === "" && navList) {
-      navList.scrollTo({ left: 0, behavior: reduceMotion.matches ? "auto" : "smooth" });
+      navList.scrollTo({ left: 0, behavior: "smooth" });
     }
 
     links.forEach((link) => {
@@ -106,7 +105,7 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
   function centerInNav(link: HTMLElement) {
     if (!navList || navList.scrollWidth <= navList.clientWidth) return;
     const left = link.offsetLeft - (navList.clientWidth - link.offsetWidth) / 2;
-    navList.scrollTo({ left, behavior: reduceMotion.matches ? "auto" : "smooth" });
+    navList.scrollTo({ left, behavior: "smooth" });
   }
 
   navList?.addEventListener("focusin", (event) => {

@@ -59,12 +59,6 @@ html {
   transition-delay: 0s;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}
-
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
@@ -304,42 +298,6 @@ html {
   --d: 5;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .js [data-reveal] {
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
-
-  .js [data-reveal] .reveal-item {
-    opacity: 1;
-  }
-
-  .js [data-reveal].is-visible .reveal-item,
-  .hero-in,
-  .cursor-blink {
-    animation: none;
-  }
-
-  .card,
-  [data-nav-link]::after {
-    transition: none;
-  }
-
-  .card:hover {
-    translate: none;
-  }
-
-  .back-to-top,
-  .site-header {
-    transition: none;
-  }
-
-  .back-to-top {
-    translate: none;
-  }
-}
-
 .copy-btn .check-icon,
 .copy-btn[data-copied] .copy-icon {
   display: none;
@@ -528,28 +486,6 @@ html {
   border-radius: 2px;
   pointer-events: none;
   box-shadow: 0 0 6px currentColor;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .network-canvas {
-    display: none;
-  }
-
-  .js [data-reveal] h2::after,
-  .js [data-reveal] .timeline::before {
-    transform: none;
-    transition: none;
-  }
-
-  .js [data-reveal] .timeline-item::before,
-  .js [data-reveal].is-visible .timeline-item::before {
-    transform: none;
-    animation: none;
-  }
-
-  .btn-shine::after {
-    display: none;
-  }
 }
 
 main > section[data-reveal] {
