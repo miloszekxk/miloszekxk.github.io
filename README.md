@@ -23,6 +23,6 @@ Astro, Tailwind CSS, TypeScript. Hosting na GitHub Pages z automatycznym wdroże
 | --- | --- |
 | Teksty sekcji (PL i EN) | `src/i18n/ui.ts` |
 | Projekty, umiejętności, wykształcenie, certyfikaty | `src/data/projects.ts` |
-| E-mail, GitHub, LinkedIn | `src/data/site.ts` |
+| E-mail (w częściach: `emailUser`, `emailDomain`), GitHub, LinkedIn | `src/data/site.ts` |
 
 Przycisk CV pojawia się sam po dodaniu pliku `public/cv.pdf`.

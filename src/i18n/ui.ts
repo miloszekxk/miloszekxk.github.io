@@ -64,6 +64,7 @@ export const ui = {
     "contact.copy": "Kopiuj",
     "contact.copied": "Skopiowano",
     "contact.copyLabel": "Kopiuj adres e-mail",
+    "contact.copyFailed": "Nie udało się skopiować, adres jest zaznaczony",
   },
   en: {
     "meta.title": "Miłosz Baron - Computer Science Student",
@@ -116,6 +117,7 @@ export const ui = {
     "contact.copy": "Copy",
     "contact.copied": "Copied",
     "contact.copyLabel": "Copy email address",
+    "contact.copyFailed": "Couldn't copy, the address is selected",
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 

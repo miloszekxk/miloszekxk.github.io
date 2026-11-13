@@ -58,6 +58,7 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
           <li>
             <a
               href={link.href}
+              data-lang-link
               hreflang={link.code}
               lang={link.code}
               title={link.label}
@@ -87,8 +88,17 @@ const langLinks = (Object.keys(languages) as Lang[]).map((code) => ({
     .filter((section): section is HTMLElement => section !== null);
 
   const navList = document.querySelector<HTMLElement>("[data-nav-list]");
+  let activeId = "";
+
+  // Zmiana języka prowadzi do tej samej sekcji, a nie na górę strony
+  document.querySelectorAll<HTMLAnchorElement>("[data-lang-link]").forEach((link) => {
+    link.addEventListener("click", () => {
+      link.hash = activeId;
+    });
+  });
 
   function setActive(id: string) {
+    activeId = id;
     if (id === "" && navList) {
       navList.scrollTo({ left: 0, behavior: "smooth" });
     }

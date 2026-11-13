@@ -1,6 +1,8 @@
 export const site = {
   name: "Miłosz Baron",
-  email: "MiloszBaron@outlook.com",
+  /** E-mail w częściach, żeby nie znalazły go boty zbierające adresy (na stronie składa go JS) */
+  emailUser: "MiloszBaron",
+  emailDomain: "outlook.com",
   github: "https://github.com/miloszekxk",
   linkedin: "",
 

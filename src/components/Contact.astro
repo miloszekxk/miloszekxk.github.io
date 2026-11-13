@@ -15,9 +15,8 @@ const icons = {
   check: '<path d="M20 6 9 17l-5-5"/>',
 };
 
-const [emailUser, emailDomain] = site.email.split("@");
-
-const mailto = `mailto:${site.email}?subject=${encodeURIComponent(t("contact.mailSubject"))}`;
+// Adres trafia do HTML zakodowany, składa go skrypt poniżej; bez JS widać zapis z [at]
+const emailEncoded = btoa(`${site.emailUser}@${site.emailDomain}`);
 
 const profiles = [
   { label: "GitHub", href: site.github, icon: icons.github },
@@ -46,6 +45,8 @@ const svgAttrs = {
 <section
   id="contact"
   data-reveal
+  data-email={emailEncoded}
+  data-mail-subject={t("contact.mailSubject")}
   class="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)] gap-10 border-t border-line px-6 py-24 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-center md:gap-14"
 >
   <div class="flex flex-col items-start gap-6">
@@ -59,7 +60,8 @@ const svgAttrs = {
 
     <div class="flex flex-wrap items-center gap-x-5 gap-y-3 pt-1">
       <a
-        href={mailto}
+        data-mailto
+        hidden
         data-magnetic
         class="btn-shine inline-flex min-h-12 items-center gap-2 rounded-md bg-accent px-6 font-semibold text-bg no-underline transition duration-200 hover:-translate-y-0.5 hover:bg-accent/85"
       >
@@ -78,16 +80,19 @@ const svgAttrs = {
       <div class="min-w-0 flex-1">
         <p class="font-mono text-xs text-muted">{t("contact.email")}</p>
         <a
-          href={mailto}
+          data-mailto
+          data-email-text
           class="break-long inline-block py-0.5 font-medium text-fg no-underline transition-colors hover:text-accent"
         >
-          {emailUser}<wbr />@{emailDomain}
+          {site.emailUser}<wbr /> [at] {site.emailDomain}
         </a>
       </div>
       <button
         type="button"
-        data-copy={site.email}
+        hidden
+        data-copy
         data-copied-label={t("contact.copied")}
+        data-copy-failed-label={t("contact.copyFailed")}
         aria-label={t("contact.copyLabel")}
         title={t("contact.copy")}
         class="copy-btn inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-fg hover:text-fg"
@@ -131,14 +136,41 @@ const svgAttrs = {
 </section>
 
 <script>
+  const contact = document.getElementById("contact");
+  const email = contact?.dataset.email ? atob(contact.dataset.email) : "";
+
+  if (contact && email) {
+    const mailto = `mailto:${email}?subject=${encodeURIComponent(contact.dataset.mailSubject ?? "")}`;
+    contact.querySelectorAll<HTMLAnchorElement>("[data-mailto]").forEach((link) => {
+      link.href = mailto;
+      link.hidden = false;
+    });
+    contact.querySelectorAll<HTMLElement>("[data-email-text]").forEach((el) => (el.textContent = email));
+  }
+
+  // Schowek niedostępny: zaznacz adres, żeby dało się go skopiować ręcznie
+  function selectEmail() {
+    const target = contact?.querySelector("[data-email-text]");
+    const selection = window.getSelection();
+    if (!target || !selection) return;
+    const range = document.createRange();
+    range.selectNodeContents(target);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
   document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((button) => {
+    if (!email) return;
+    button.hidden = false;
     const status = button.parentElement?.querySelector<HTMLElement>("[data-copy-status]");
     let timer: number | undefined;
 
     button.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(button.dataset.copy ?? "");
+        await navigator.clipboard.writeText(email);
       } catch {
+        selectEmail();
+        if (status) status.textContent = button.dataset.copyFailedLabel ?? "";
         return;
       }
 

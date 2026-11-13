@@ -30,7 +30,6 @@ const personSchema = {
   "@type": "Person",
   name: site.name,
   url: new URL(localizedPath(lang), Astro.site).href,
-  email: `mailto:${site.email}`,
   jobTitle: t("person.jobTitle"),
   description,
   image: ogImage.href,
@@ -61,7 +60,13 @@ const analyticsEnabled = import.meta.env.PROD && site.goatcounterCode !== "";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline>document.documentElement.classList.add("js");</script>
+    <script is:inline>
+      document.documentElement.classList.add("js");
+      // Skrypt strony się nie wykonał: pokaż sekcje bez animacji
+      addEventListener("load", () => {
+        if (!document.documentElement.classList.contains("reveal-ready")) document.documentElement.classList.remove("js");
+      });
+    </script>
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -170,6 +175,7 @@ const analyticsEnabled = import.meta.env.PROD && site.goatcounterCode !== "";
       );
 
       revealEls.forEach((el) => revealObserver.observe(el));
+      document.documentElement.classList.add("reveal-ready");
 
       const backToTop = document.getElementById("back-to-top");
       const homeLink = document.querySelector<HTMLElement>("[data-home-link]");

@@ -492,3 +492,95 @@ main > section[data-reveal] {
   content-visibility: auto;
   contain-intrinsic-size: auto 700px;
 }
+
+/* Wydruk i zapis do PDF: jasne kolory, wszystkie sekcje widoczne, bez elementów ekranowych */
+@media print {
+  :root {
+    color-scheme: light;
+    --color-bg: #fff;
+    --color-surface: #fff;
+    --color-border: #c9ced6;
+    --color-line: #dde1e6;
+    --color-fg: #111;
+    --color-fg-soft: #222;
+    --color-muted: #555;
+    --color-accent: #1a7f37;
+  }
+
+  .js [data-reveal],
+  .js [data-reveal] .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .js [data-reveal] h2::after,
+  .js [data-reveal] .timeline::before,
+  .js [data-reveal] .timeline-item::before {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  main > section[data-reveal] {
+    content-visibility: visible;
+  }
+
+  [data-scramble].is-scrambling {
+    color: inherit;
+  }
+
+  [data-scramble].is-scrambling::before {
+    content: none;
+  }
+
+  .site-header {
+    position: static;
+    translate: none;
+  }
+
+  #site-header nav > ul,
+  #site-header nav > span,
+  #scroll-progress,
+  .network-canvas,
+  .hero-glow,
+  .back-to-top,
+  .copy-btn,
+  .confetti,
+  [data-mailto][data-magnetic],
+  a[href="#contact"] {
+    display: none !important;
+  }
+
+  .cursor-blink {
+    animation: none;
+  }
+
+  .hero-in {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .card a[href^="http"] {
+    display: block;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .card {
+    break-inside: avoid;
+    transform: none !important;
+    translate: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Na papierze link musi pokazać adres */
+  .card a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+  }
+}

@@ -318,6 +318,15 @@ document.addEventListener("animationend", (e) => {
 const whenIdle = (fn: () => void) =>
   typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 300);
 
+// Błąd w jednym efekcie nie może zatrzymać reszty strony (np. odsłaniania sekcji)
+const safe = (init: () => void) => () => {
+  try {
+    init();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // Celowo bez prefers-reduced-motion: animacje działają u wszystkich
-initScramble();
-[initNetwork, initCards, initMagnetic, initConfetti].forEach((init) => whenIdle(init));
+safe(initScramble)();
+[initNetwork, initCards, initMagnetic, initConfetti].forEach((init) => whenIdle(safe(init)));
